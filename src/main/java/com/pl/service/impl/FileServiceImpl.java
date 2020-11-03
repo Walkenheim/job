@@ -1,5 +1,6 @@
 package com.pl.service.impl;
 
+import com.pl.api.model.FilterDto;
 import com.pl.api.model.PaginationDto;
 import com.pl.api.model.RecordDto;
 import com.pl.dao.FileDao;
@@ -91,12 +92,10 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<PaginationDto<RecordDto>> getRecords(LocalDate startDate, LocalDate endDate) {
+    public PaginationDto<List<RecordDto>> getRecords(LocalDate dateFrom, LocalDate dateTo) {
 
-        PaginationDto<RecordDto> paginationDto = new PaginationDto<>();
-
-
-        return null;
-
+        return fileDao.getRecords(new FilterDto()
+                .setDateFrom(dateFrom)
+                .setDateTo(dateTo));
     }
 }

@@ -37,5 +37,5 @@ public interface FileService {
      * @param endDate date to param
      * @return list of records by specific date with paging meta info
      */
-    List<PaginationDto<RecordDto>> getRecords(LocalDate startDate, LocalDate endDate);
+    PaginationDto<List<RecordDto>> getRecords(LocalDate startDate, LocalDate endDate);
 }

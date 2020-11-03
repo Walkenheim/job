@@ -5,14 +5,17 @@ import com.pl.api.model.PaginationDto;
 import com.pl.api.model.RecordDto;
 import com.pl.service.FileService;
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
-@RestController("/api/" + ApiConst.API_VERSION + "/file")
+@RestController
+@RequestMapping("/api/" + ApiConst.API_VERSION + "/file")
 @AllArgsConstructor
 public class FileController {
 
@@ -37,9 +40,9 @@ public class FileController {
     }
 
     @RequestMapping(value = "/filter", method = RequestMethod.GET)
-    public ResponseEntity<List<PaginationDto<RecordDto>>> getRecords(@RequestParam String startDate,
-                                                                     @RequestParam String endDate) {
+    public ResponseEntity<PaginationDto<List<RecordDto>>> getRecords(@RequestParam @DateTimeFormat(pattern = "dd.MM.yyyy") LocalDate dateFrom,
+                                                                     @RequestParam @DateTimeFormat(pattern = "dd.MM.yyyy") LocalDate dateTo) {
 
-        return new ResponseEntity<>(null, HttpStatus.OK);
+        return new ResponseEntity<>(fileService.getRecords(dateFrom, dateTo), HttpStatus.OK);
     }
 }
