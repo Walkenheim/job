@@ -2,53 +2,57 @@ package com.pl.dao.impl;
 
 import com.pl.api.model.RecordDto;
 import com.pl.dao.FileDao;
-import com.pl.exception.CustomFileException;
+import com.pl.exception.FileException;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
-// todo for real database , I would use entity instead of dto
+// Representation of some database
 
 @Repository
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CsvFileDaoImpl implements FileDao {
 
-    static final String KEY_NAME = "csvRecords";
-
-    //This map is representation of some DataBase
-    Map<String, List<RecordDto>> ownDatabase = new HashMap<>();
+    List<RecordDto> ownDatabase = new ArrayList<>();
 
     @Override
     public void insert(List<RecordDto> recordDTOs) {
 
-        ownDatabase.put(KEY_NAME, recordDTOs);
+        ownDatabase.stream()
+                .filter(rec -> recordDTOs
+                        .stream()
+                        .anyMatch(recordDto -> recordDto.getPrimaryKey() == rec.getPrimaryKey())).
+                forEach(rec -> {
+            throw new FileException("PRIMARY_KEY must be unique");
+        });
+
+        ownDatabase.addAll(recordDTOs);
     }
 
     @Override
     public RecordDto getById(int id) {
 
-      List<RecordDto> recordDTOs = ownDatabase.get(KEY_NAME);
-
-      return recordDTOs
-              .stream()
-              .filter(dto -> dto.getPrimaryKey() == id)
-              .findFirst().orElseThrow(() -> new CustomFileException("Not found record in storage by Id"));
+        return ownDatabase
+                .stream()
+                .filter(dto -> dto.getPrimaryKey() == id)
+                .findFirst()
+                .orElseThrow(() -> new FileException("Not found record in storage by Id"));
     }
 
     @Override
     public void delete(Integer id) {
 
-        List<RecordDto> recordDtos = ownDatabase.get(KEY_NAME);
-
         RecordDto recordDto = getById(id);
 
-        recordDtos.remove(recordDto);
+        if (!ownDatabase.remove(recordDto)) throw new FileException("Cannot remove record from storage by id");
+    }
 
-        ownDatabase.put(KEY_NAME, recordDtos);
+    @Override
+    public List<RecordDto> getRecords() {
+
+        return null;
     }
 }

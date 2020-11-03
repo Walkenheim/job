@@ -1,6 +1,6 @@
 package com.pl.util;
 
-import com.pl.exception.CustomFileException;
+import com.pl.exception.FileException;
 import com.pl.util.handler.CsvFileHandler;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,6 +25,6 @@ public final class FileExtensionHandler {
     public static FileExtensionStrategy getStrategyByFileExtension(String fileExtension) {
 
         return Optional.ofNullable(strategies.get(fileExtension))
-                .orElseThrow(() -> new CustomFileException("Unsupported file extension"));
+                .orElseThrow(() -> new FileException("Unsupported file extension"));
     }
 }

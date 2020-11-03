@@ -1,17 +1,19 @@
 package com.pl.service.impl;
 
-import com.pl.dao.FileDao;
-import com.pl.exception.CustomFileException;
+import com.pl.api.model.PaginationDto;
 import com.pl.api.model.RecordDto;
+import com.pl.dao.FileDao;
+import com.pl.exception.FileException;
+import com.pl.service.FileService;
 import com.pl.util.FileExtensionHandler;
 import com.pl.util.FileExtensionStrategy;
-import com.pl.service.FileService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +30,7 @@ public class FileServiceImpl implements FileService {
         try {
             //Get file extension
             String fileExtension = Optional.ofNullable(FilenameUtils.getExtension(file.getOriginalFilename()))
-                    .orElseThrow(() -> new CustomFileException("Not found file extension"));
+                    .orElseThrow(() -> new FileException("Not found file extension"));
 
             //Get handler by file extension
             FileExtensionStrategy fileExtensionStrategy = FileExtensionHandler.getStrategyByFileExtension(fileExtension);
@@ -38,7 +40,7 @@ public class FileServiceImpl implements FileService {
 
             fileDao.insert(convertedRecordDTOS);
 
-        } catch (CustomFileException e) {
+        } catch (FileException e) {
 
             log.error(e.getErrorMessage(), e);
             throw e;
@@ -53,12 +55,48 @@ public class FileServiceImpl implements FileService {
     @Override
     public RecordDto getRecord(Integer id) {
 
-       return fileDao.getById(id);
+        try {
+
+            return fileDao.getById(id);
+
+        } catch (FileException e) {
+            log.error(e.getErrorMessage(), e);
+
+            throw e;
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void deleteRecord(Integer id) {
 
-        fileDao.delete(id);
+        try {
+
+            fileDao.delete(id);
+
+        } catch (FileException e) {
+            log.error(e.getErrorMessage(), e);
+
+            throw e;
+
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<PaginationDto<RecordDto>> getRecords(LocalDate startDate, LocalDate endDate) {
+
+        PaginationDto<RecordDto> paginationDto = new PaginationDto<>();
+
+
+        return null;
+
     }
 }

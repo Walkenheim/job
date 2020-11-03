@@ -1,6 +1,5 @@
 package com.pl.util.handler;
 
-import com.pl.exception.CustomFileException;
 import com.pl.api.model.RecordDto;
 import com.pl.util.FileExtensionStrategy;
 import lombok.AccessLevel;
@@ -19,7 +18,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Data
@@ -33,8 +31,7 @@ public class CsvFileHandler implements FileExtensionStrategy {
 
         CSVParser csvParser = CSVFormat.newFormat(';').withFirstRecordAsHeader().parse(new InputStreamReader(textFile.getInputStream()));
 
-        return Optional.ofNullable(csvParser.getRecords())
-                .orElseThrow(() -> new CustomFileException("Not found data in file"))
+        return csvParser.getRecords()
                 .stream()
                 .map(this::convertCsvRecordToRecordDto)
                 .filter(Objects::nonNull)

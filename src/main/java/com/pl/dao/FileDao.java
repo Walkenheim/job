@@ -11,4 +11,6 @@ public interface FileDao {
     RecordDto getById(int id);
 
     void delete(Integer id);
+
+    List<RecordDto> getRecords();
 }
