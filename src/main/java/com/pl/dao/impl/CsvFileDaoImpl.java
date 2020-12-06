@@ -69,12 +69,10 @@ public class CsvFileDaoImpl implements FileDao {
                     .setOffSet(0);
         }
 
-        List<RecordDto> filteredRecords = new ArrayList<>();
-        for (RecordDto recordDto : ownDatabase) {
-            if (recordDto.getUpdatedTimestamp().isAfter(filterDto.getDateFrom()) && recordDto.getUpdatedTimestamp().isBefore(filterDto.getDateTo())) {
-                filteredRecords.add(recordDto);
-            }
-        }
+        List<RecordDto> filteredRecords = ownDatabase
+                .stream()
+                .filter(recordDto -> recordDto.getUpdatedTimestamp().isAfter(filterDto.getDateFrom()) && recordDto.getUpdatedTimestamp().isBefore(filterDto.getDateTo()))
+                .collect(Collectors.toList());
 
         return paginationDto
                 .setData(filteredRecords)
